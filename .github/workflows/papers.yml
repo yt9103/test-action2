@@ -18,10 +18,13 @@ jobs:
                        | sed -e '1d;$d')
           echo $array
           echo "IDS=$array"
-      - name: Create an issue with papers
-        uses: dacbd/create-issue-action@main
+      - uses: nashmaniac/create-issue-action@v1.2
+        name: Create Issue Action
         with:
-          token: ${{ github.token }}
-          title: Daily Papers `date "+%Y-%m-%d"`
+          title: 'Daily Paper ${`date "+%Y-%m-%d"`}'
+          token: ${{secrets.GITHUB_TOKEN}}
+          assignees: ${{github.actor}}
           body: |
-            ${{ steps.paper.outputs.IDS }}
+            | test | test |
+            | --- | --- |
+            | test | test |
