@@ -17,10 +17,7 @@ jobs:
       - name: Generate papers
         id: paper
         run: |
-          echo 'export GEM_HOME="$HOME/gems"' >> ~/.bashrc
-          echo 'export PATH="$HOME/gems/bin:$PATH"' >> ~/.bashrc
-          source ~/.bashrc
-          gem install nokogiri
+          sudo gem install nokogiri
           prompt_text="请合并以下文本，输出为markdown格式的表格："
           for i in {1..5};do
             echo $i
