@@ -3,10 +3,6 @@ name: Daily Papers
 permissions:
   issues: write
 
-on:
- schedule: 
-   - cron: '*/5 * * * *'
-
 jobs:
   papers:
     runs-on: ubuntu-latest
