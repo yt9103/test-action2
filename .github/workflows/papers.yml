@@ -20,7 +20,7 @@ jobs:
                        | jq -r '.candidates[0].content.parts[0].text' \
                        | sed -e '1d;$d')
           END=10
-          prompt="请合并以下文本，用markdown语法的表格输出："
+          prompt_text="请合并以下文本，用markdown语法的表格输出："
           for ((i=0;i<END;i++)); do
             echo $i
             paper_id=$(echo $array | jq -r ".[$i]")
@@ -28,8 +28,8 @@ jobs:
                        -d '{"contents":[{"parts":[{"text":"https://arxiv.org/abs/$paper_id 请输出这篇论文的标题，摘要和 pdf 地址"}]}]}' \
                        -X POST "https://palm-proxy2-kappa.vercel.app/v1beta/models/gemini-pro:generateContent?key=${{ secrets.GEMINI_TOKEN }}" \
                        | jq -r '.candidates[0].content.parts[0].text')
-            prompt+="第$i段：$res；"
-            sleep 3
+            prompt_text+="第$i段：$res；\n"
+            sleep 5
           done
 
           echo $prompt
@@ -38,7 +38,7 @@ jobs:
           echo "TITLE=$title" >> "$GITHUB_OUTPUT"
 
           body=$(curl -H 'Content-Type: application/json' \
-                     -d '{"contents":[{"parts":[{"text":"$prompt"}]}]}' \
+                     -d '{"contents":[{"parts":[{"text":"$prompt_text"}]}]}' \
                      -X POST "https://palm-proxy2-kappa.vercel.app/v1beta/models/gemini-pro:generateContent?key=${{ secrets.GEMINI_TOKEN }}" \
                      | jq -r '.candidates[0].content.parts[0].text')
           echo $body
