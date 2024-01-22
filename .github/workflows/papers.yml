@@ -26,7 +26,10 @@ jobs:
 
             echo $text
             
-            res=$(curl -H 'Content-Type: application/json' -d '{"contents":[{"parts":[{"text":"'$text'"}]}]}' -X POST "https://palm-proxy2-kappa.vercel.app/v1beta/models/gemini-pro:generateContent?key=${{ secrets.GEMINI_TOKEN }}" | jq -r '.candidates[0].content.parts[0].text')
+            res=$(curl -H 'Content-Type: application/json' \
+                       -d '{"contents":[{"parts":[{"text":"'$text'"}]}]}' \
+                       -X POST "https://palm-proxy2-kappa.vercel.app/v1beta/models/gemini-pro:generateContent?key=${{ secrets.GEMINI_TOKEN }}" \ 
+                       | jq -r '.candidates[0].content.parts[0].text')
 
             echo $res
             
