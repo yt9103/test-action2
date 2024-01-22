@@ -22,7 +22,9 @@ jobs:
           for i in {1..5};do
             echo $i
 
-            text=$(curl -s "https://arxiv.org/search/cs?query=llm&searchtype=all&abstracts=show&order=-announced_date_first&size=25" | nokogiri -e 'puts $_.at_css("ol.breathe-horizontal li:nth-child('$i')").text' | tr -d '\n')
+            text='请总结下这个论文的标题，摘要和 pdf 地址：\n'
+
+            text+=$(curl -s "https://arxiv.org/search/cs?query=llm&searchtype=all&abstracts=show&order=-announced_date_first&size=25" | nokogiri -e 'puts $_.at_css("ol.breathe-horizontal li:nth-child('$i')").text' | tr -d '\n')
 
             echo $text
             
