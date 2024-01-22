@@ -1,5 +1,8 @@
 name: Daily Papers
 
+permissions:
+  issues: write
+
 on:
  schedule: 
    - cron: '*/5 * * * *'
@@ -18,12 +21,10 @@ jobs:
                        | sed -e '1d;$d')
           echo $array
           echo "IDS=$array"
-      - uses: nashmaniac/create-issue-action@v1.2
-        name: Create Issue Action
+      - uses: mrdoodles/issue-action@v1
         with:
-          title: 'Daily Paper ${`date "+%Y-%m-%d"`}'
-          token: ${{secrets.GITHUB_TOKEN}}
-          assignees: ${{github.actor}}
+          token: ${{ secrets.GITHUB_TOKEN }}
+          title: Some Issue Title
           body: |
             | test | test |
             | --- | --- |
