@@ -18,7 +18,7 @@ jobs:
                        | sed -e '1d;$d')
           echo $array
           echo "IDS=$array"
-      - name: Create an issue
+      - name: Create an issue with papers
         uses: dacbd/create-issue-action@main
         with:
           token: ${{ github.token }}
