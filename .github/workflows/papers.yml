@@ -20,7 +20,6 @@ jobs:
                        | jq -r '.candidates[0].content.parts[0].text' \
                        | sed -e '1d;$d')
           title=`date "+%Y-%m-%d"`
-          echo "IDS=$array" >> "$GITHUB_OUTPUT"
           echo "TITLE=$title" >> "$GITHUB_OUTPUT"
       - name: create an issue
         uses: dacbd/create-issue-action@main
