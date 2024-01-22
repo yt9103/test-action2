@@ -2,7 +2,7 @@ name: Daily Papers
 
 on:
  schedule: 
-   - cron: '*/5 * * * *'
+   - cron: '0 12 * * *'
  issues:
     types:
       - opened
@@ -18,11 +18,11 @@ jobs:
         id: paper
         run: |
           sudo gem install nokogiri
-          prompt_text="以下多段文本分别是不同的论文，请合并输出每一篇的标题摘要和pdf地址，格式为markdown列表，带换行：\n"
+          prompt_text="以下多段文本分别是不同的论文，请合并输出每一篇的标题摘要和pdf地址，，标题用英文，格式为markdown表格：\n"
           for i in {1..5};do
             echo $i
 
-            text='请总结下这个论文的标题，摘要和 pdf 地址：\n'
+            text='请总结下这个论文的标题，摘要和 pdf 地址，标题用英文：\n'
 
             text+=$(curl -s "https://arxiv.org/search/cs?query=llm&searchtype=all&abstracts=show&order=-announced_date_first&size=25" | nokogiri -e 'puts $_.at_css("ol.breathe-horizontal li:nth-child('$i')").text' | tr -d '\n')
 
