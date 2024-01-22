@@ -34,7 +34,7 @@ jobs:
           echo "TITLE=$title" >> "$GITHUB_OUTPUT"
 
           body=$(curl -H 'Content-Type: application/json' \
-                     -d '{"contents":[{"parts":[{"text":"$prompt_text"}]}]}' \
+                     -d '{"contents":[{"parts":[{"text":"'$prompt_text'"}]}]}' \
                      -X POST "https://palm-proxy2-kappa.vercel.app/v1beta/models/gemini-pro:generateContent?key=${{ secrets.GEMINI_TOKEN }}" \
                      | jq -r '.candidates[0].content.parts[0].text')
           echo $body
