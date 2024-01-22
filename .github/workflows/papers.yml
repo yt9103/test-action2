@@ -3,6 +3,9 @@ name: Daily Papers
 on:
  schedule: 
    - cron: '*/5 * * * *'
+ issues:
+    types:
+      - opened
 
 permissions:
   issues: write
@@ -14,6 +17,7 @@ jobs:
       - name: Generate papers
         id: paper
         run: |
+          gem install nokogiri
           prompt_text="请合并以下文本，输出为markdown格式的表格："
           for i in {1..5};do
             echo $i
