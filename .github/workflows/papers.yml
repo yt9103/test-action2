@@ -24,6 +24,8 @@ jobs:
 
             text=$(curl -s "https://arxiv.org/search/cs?query=llm&searchtype=all&abstracts=show&order=-announced_date_first&size=25" | nokogiri -e 'puts $_.at_css("ol.breathe-horizontal li:nth-child('$i')").text') 
 
+            echo $text
+            
             prompt_text+=$(curl -H 'Content-Type: application/json' -d '{"contents":[{"parts":[{"text":"'$text'"}]}]}' -X POST "https://palm-proxy2-kappa.vercel.app/v1beta/models/gemini-pro:generateContent?key=${{ secrets.GEMINI_TOKEN }}" | jq -r '.candidates[0].content.parts[0].text')
             prompt_text+="；"
 
