@@ -17,7 +17,7 @@ jobs:
                        | jq -r '.candidates[0].content.parts[0].text' \
                        | sed -e '1d;$d')
           echo $array
-          echo "IDS=$array" >> "$GITHUB_OUTPUT"
+          echo "IDS=$array"
       - name: Create an issue
         uses: dacbd/create-issue-action@main
         with:
