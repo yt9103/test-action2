@@ -14,25 +14,21 @@ jobs:
       - name: Generate papers
         id: paper
         run: |
-          array=$(curl -H 'Content-Type: application/json' \
-                       -d '{"contents":[{"parts":[{"text":"https://arxiv.org/search/cs?query=llm&searchtype=all&abstracts=show&order=-announced_date_first&size=50 请输入里面前10篇论文的 id，输出为 json 数组"}]}]}' \
-                       -X POST "https://palm-proxy2-kappa.vercel.app/v1beta/models/gemini-pro:generateContent?key=${{ secrets.GEMINI_TOKEN }}" \
-                       | jq -r '.candidates[0].content.parts[0].text' \
-                       | sed -e '1d;$d')
-          END=10
-          prompt_text="请合并以下文本，用markdown语法的表格输出："
-          for ((i=0;i<END;i++)); do
-            echo $i
-            paper_id=$(echo $array | jq -r ".[$i]")
-            res=$(curl -H 'Content-Type: application/json' \
-                       -d '{"contents":[{"parts":[{"text":"https://arxiv.org/abs/$paper_id 请输出这篇论文的标题，摘要和 pdf 地址"}]}]}' \
-                       -X POST "https://palm-proxy2-kappa.vercel.app/v1beta/models/gemini-pro:generateContent?key=${{ secrets.GEMINI_TOKEN }}" \
-                       | jq -r '.candidates[0].content.parts[0].text')
-            prompt_text+="第$i段：$res；\n"
-            sleep 5
-          done
+          res1=$(curl -H 'Content-Type: application/json' \
+                     -d '{"contents":[{"parts":[{"text":"https://arxiv.org/search/cs?query=llm&searchtype=all&abstracts=show&order=-announced_date_first&size=50 请输出页面里第1-3篇论文的标题，摘要和 pdf 地址"}]}]}' \
+                     -X POST "https://palm-proxy2-kappa.vercel.app/v1beta/models/gemini-pro:generateContent?key=${{ secrets.GEMINI_TOKEN }}" \
+                     | jq -r '.candidates[0].content.parts[0].text')
 
-          echo $prompt
+          sleep 5
+
+          res2=$(curl -H 'Content-Type: application/json' \
+                      -d '{"contents":[{"parts":[{"text":"https://arxiv.org/search/cs?query=llm&searchtype=all&abstracts=show&order=-announced_date_first&size=50 请输出页面里第4-6篇论文的标题，摘要和 pdf 地址"}]}]}' \
+                      -X POST "https://palm-proxy2-kappa.vercel.app/v1beta/models/gemini-pro:generateContent?key=${{ secrets.GEMINI_TOKEN }}" \
+                      | jq -r '.candidates[0].content.parts[0].text')
+
+          sleep 5
+
+          prompt_text="请合并以下两段文本，并输出为markdown格式的表格：第一段文本：$res1 ；\n 第二段文本：$res2"
           
           title=`date "+%Y-%m-%d"`
           echo "TITLE=$title" >> "$GITHUB_OUTPUT"
