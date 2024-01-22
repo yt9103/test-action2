@@ -21,11 +21,9 @@ jobs:
                        | sed -e '1d;$d')
           echo $array
           echo "IDS=$array"
-      - uses: mrdoodles/issue-action@v1
+      - name: create an issue
+        uses: dacbd/create-issue-action@main
         with:
-          token: ${{ secrets.GITHUB_TOKEN }}
-          title: Some Issue Title
-          body: |
-            | test | test |
-            | --- | --- |
-            | test | test |
+          token: ${{ github.token }}
+          title: Simple test issue
+          body: my new issue
