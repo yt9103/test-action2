@@ -1,5 +1,7 @@
 name: Daily Papers
 
+on:
+
 permissions:
   issues: write
 
@@ -10,29 +12,27 @@ jobs:
       - name: Generate papers
         id: paper
         run: |
-          res1=$(curl -H 'Content-Type: application/json' \
-                     -d '{"contents":[{"parts":[{"text":"https://arxiv.org/search/cs?query=llm&searchtype=all&abstracts=show&order=-announced_date_first&size=50 请输出页面里第1-3篇论文的标题，摘要和 pdf 地址"}]}]}' \
-                     -X POST "https://palm-proxy2-kappa.vercel.app/v1beta/models/gemini-pro:generateContent?key=${{ secrets.GEMINI_TOKEN }}" \
-                     | jq -r '.candidates[0].content.parts[0].text')
+          prompt_text="请合并以下文本，输出为markdown格式的表格："
+          for i in {1..5};do
+            echo $i
 
-          sleep 5
+            text=$(curl -s "https://arxiv.org/search/cs?query=llm&searchtype=all&abstracts=show&order=-announced_date_first&size=25" | nokogiri -e 'puts $_.at_css("ol.breathe-horizontal li:nth-child('$i')").text') 
 
-          res2=$(curl -H 'Content-Type: application/json' \
-                      -d '{"contents":[{"parts":[{"text":"https://arxiv.org/search/cs?query=llm&searchtype=all&abstracts=show&order=-announced_date_first&size=50 请输出页面里第4-6篇论文的标题，摘要和 pdf 地址"}]}]}' \
-                      -X POST "https://palm-proxy2-kappa.vercel.app/v1beta/models/gemini-pro:generateContent?key=${{ secrets.GEMINI_TOKEN }}" \
-                      | jq -r '.candidates[0].content.parts[0].text')
+            prompt_text+=$(curl -H 'Content-Type: application/json' -d '{"contents":[{"parts":[{"text":"'$text'"}]}]}' -X POST "https://palm-proxy2-kappa.vercel.app/v1beta/models/gemini-pro:generateContent?key=${{ secrets.GEMINI_TOKEN }}" | jq -r '.candidates[0].content.parts[0].text')
+            prompt_text+="；"
 
-          sleep 5
+            sleep 5
+          done
 
-          prompt_text="请合并以下两段文本，并输出为markdown格式的表格：第一段文本：$res1 ；\n 第二段文本：$res2"
+          echo $prompt_text
           
           title=`date "+%Y-%m-%d"`
           echo "TITLE=$title" >> "$GITHUB_OUTPUT"
 
           body=$(curl -H 'Content-Type: application/json' \
-                     -d '{"contents":[{"parts":[{"text":"'$prompt_text'"}]}]}' \
-                     -X POST "https://palm-proxy2-kappa.vercel.app/v1beta/models/gemini-pro:generateContent?key=${{ secrets.GEMINI_TOKEN }}" \
-                     | jq -r '.candidates[0].content.parts[0].text')
+                      -d '{"contents":[{"parts":[{"text":"'$prompt_text'"}]}]}' \
+                      -X POST "https://palm-proxy2-kappa.vercel.app/v1beta/models/gemini-pro:generateContent?key=${{ secrets.GEMINI_TOKEN }}" \
+                      | jq -r '.candidates[0].content.parts[0].text')
           echo $body
       - name: create an issue
         uses: dacbd/create-issue-action@main
