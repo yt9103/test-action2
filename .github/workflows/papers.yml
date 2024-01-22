@@ -19,13 +19,14 @@ jobs:
                        -X POST "https://palm-proxy2-kappa.vercel.app/v1beta/models/gemini-pro:generateContent?key=${{ secrets.GEMINI_TOKEN }}" \
                        | jq -r '.candidates[0].content.parts[0].text' \
                        | sed -e '1d;$d')
-          echo $array
-          echo "IDS=$array"
+          title=`date "+%Y-%m-%d"`
+          echo "IDS=$array" >> "$GITHUB_OUTPUT"
+          echo "TITLE=$title" >> "$GITHUB_OUTPUT"
       - name: create an issue
         uses: dacbd/create-issue-action@main
         with:
           token: ${{ github.token }}
-          title: Papers ${{ date "+%Y-%m-%d %H:%M:%S" }}
+          title: Papers ${{ steps.paper.outputs.TITLE }}
           body: |
             - 1
             - 2
