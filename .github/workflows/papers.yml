@@ -19,7 +19,7 @@ jobs:
         run: |
           sudo gem install nokogiri
           prompt_text="以下多段文本分别是不同的论文，请合并输出每一篇的标题摘要和pdf地址，标题用英文，摘要用中文，格式为markdown表格：\n"
-          for i in {1..10};do
+          for i in {1..6};do
             echo $i
 
             text='请总结下这个论文的标题，摘要和 pdf 地址，标题用英文：\n'
